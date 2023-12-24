@@ -5,18 +5,29 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.dicoding.todoapp.R
+import com.dicoding.todoapp.data.Task
+import com.dicoding.todoapp.databinding.ActivityAddTaskBinding
+import com.dicoding.todoapp.ui.ViewModelFactory
 import com.dicoding.todoapp.utils.DatePickerFragment
+import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddTaskActivity : AppCompatActivity(), DatePickerFragment.DialogDateListener {
     private var dueDateMillis: Long = System.currentTimeMillis()
+    private val viewModel by viewModels<addTaskViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
+    private val binding by lazy {
+        ActivityAddTaskBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_task)
+        setContentView(binding.root)
 
         supportActionBar?.title = getString(R.string.add_task)
 
@@ -31,7 +42,21 @@ class AddTaskActivity : AppCompatActivity(), DatePickerFragment.DialogDateListen
         return when (item.itemId) {
             R.id.action_save -> {
                 //TODO 12 : Create AddTaskViewModel and insert new task to database
-                true
+
+                val title = binding.addEdTitle.text.toString()
+                val description = binding.addEdDescription.text.toString()
+                val dueDate = binding.addTvDueDate.text
+
+                when {
+                    title.isEmpty() -> false
+                    description.isEmpty() -> false
+                    dueDate == getString(R.string.due_date) -> false
+                    else -> {
+                        viewModel.insert(Task(0, title, description, dueDateMillis))
+                        finish()
+                        true
+                    }
+                }
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -46,7 +71,7 @@ class AddTaskActivity : AppCompatActivity(), DatePickerFragment.DialogDateListen
         val calendar = Calendar.getInstance()
         calendar.set(year, month, dayOfMonth)
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        findViewById<TextView>(R.id.add_tv_due_date).text = dateFormat.format(calendar.time)
+        binding.addTvDueDate.text = dateFormat.format(calendar.time)
 
         dueDateMillis = calendar.timeInMillis
     }

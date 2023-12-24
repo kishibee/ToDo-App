@@ -41,13 +41,17 @@ android {
         jvmTarget = "17"
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
     ext {
         set("kotlin_version", "1.9.10")
 
-        set("core_version", "1.12.0")
+        set("core_version", "1.9.0")
         set("appcompat_version", "1.6.1")
         set("material_version", "1.10.0")
         set("constraint_version", "2.1.4")

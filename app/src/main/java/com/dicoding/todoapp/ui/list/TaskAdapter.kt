@@ -1,6 +1,7 @@
 package com.dicoding.todoapp.ui.list
 
 import android.content.Intent
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
@@ -20,25 +21,34 @@ class TaskAdapter(
 
     //TODO 8 : Create and initialize ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        throw NotImplementedError("Not yet implemented")
+        val viewItem = LayoutInflater.from(parent.context).inflate(
+            R.layout.task_item,
+            parent,
+            false
+        )
+        return TaskViewHolder(viewItem)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = getItem(position) as Task
         //TODO 9 : Bind data to ViewHolder (You can run app to check)
+        holder.bind(task)
         when {
             //TODO 10 : Display title based on status using TitleTextView
             task.isCompleted -> {
                 //DONE
                 holder.cbComplete.isChecked = true
+                holder.tvTitle.state = 1
             }
             task.dueDateMillis < System.currentTimeMillis() -> {
                 //OVERDUE
                 holder.cbComplete.isChecked = false
+                holder.tvTitle.state = 2
             }
             else -> {
                 //NORMAL
                 holder.cbComplete.isChecked = false
+                holder.tvTitle.state = 0
             }
         }
     }
